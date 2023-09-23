@@ -150,7 +150,35 @@
           </execution>
         </executions>
       </plugin>
-    </plugins>
+		<plugin>
+		   <groupId>org.apache.maven.plugins</groupId>
+		   <artifactId>maven-deploy-plugin</artifactId>
+		   <version>3.1.1</version>
+		   <configuration>
+		      <skip>true</skip>
+		   </configuration>
+		</plugin>
+
+		<plugin>
+		   <groupId>org.sonatype.plugins</groupId>
+		   <artifactId>nexus-staging-maven-plugin</artifactId>
+		   <version>1.5.1</version>
+		   <executions>
+		      <execution>
+			 <id>default-deploy</id>
+			 <phase>deploy</phase>
+			 <goals>
+			    <goal>deploy</goal>
+			 </goals>
+		      </execution>
+		   </executions>
+		   <configuration>
+		      <serverId>nexus</serverId>
+		      <nexusUrl>https://nexus-route-openshift-operators.apps.zagaopenshift.zagaopensource.com/repository/maven-public/</nexusUrl>
+		      <skipStaging>true</skipStaging>
+		   </configuration>
+		</plugin>
+	</plugins>
   </build>
   <profiles>
     <profile>
@@ -166,4 +194,16 @@
       </properties>
     </profile>
   </profiles>
+  <distributionManagement>
+      <repository>
+        <id>nexus</id>
+        <name>Releases</name>
+        <url>https://nexus-route-openshift-operators.apps.zagaopenshift.zagaopensource.com/repository/maven-releases/</url>
+      </repository>
+      <snapshotRepository>
+        <id>nexus</id>
+        <name>Snapshot</name>
+        <url>https://nexus-route-openshift-operators.apps.zagaopenshift.zagaopensource.com/repository/maven-snapshots/</url>
+      </snapshotRepository>
+  </distributionManagement>
 </project>
