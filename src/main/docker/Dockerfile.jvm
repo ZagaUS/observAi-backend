@@ -10,7 +10,7 @@ FROM registry.access.redhat.com/ubi8/openjdk-11:1.16
 
 ENV LANGUAGE='en_US:en'
 
-ENV APP_PORT=8082
+ENV APP_PORT=8082 
 
 ENV MONGODB_URL='mongodb://mongodb-ops-manager:Devdbpass2023@zaga-mongo-ops-manager-db-0.zaga-mongo-ops-manager-db-svc.mongodb-workspace.svc.cluster.local:27017,zaga-mongo-ops-manager-db-1.zaga-mongo-ops-manager-db-svc.mongodb-workspace.svc.cluster.local:27017,zaga-mongo-ops-manager-db-2.zaga-mongo-ops-manager-db-svc.mongodb-workspace.svc.cluster.local:27017/?authMechanism=SCRAM-SHA-256&authSource=admin&connectTimeoutMS=20000&replicaSet=zaga-mongo-ops-manager-db&serverSelectionTimeoutMS=20000'
 
