@@ -132,6 +132,7 @@ public Response updateUserInfo(UserCredentials userInfo) {
               existingEnv.setClusterPassword(environment.getClusterPassword());
               existingEnv.setHostUrl(environment.getHostUrl());
               existingEnv.setClusterType(environment.getClusterType());
+              existingEnv.setRoles(environment.getRoles());
               
               // Update other properties as needed
 

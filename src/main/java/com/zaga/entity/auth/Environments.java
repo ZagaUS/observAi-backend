@@ -1,5 +1,7 @@
 package com.zaga.entity.auth;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,5 +16,5 @@ public class Environments {
     private String clusterType;
     private long clusterId;
     private String clusterName;
-    private String roles;
+    private List<String> roles;
 }

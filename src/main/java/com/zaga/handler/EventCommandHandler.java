@@ -42,6 +42,7 @@ public class EventCommandHandler {
         String nodeName = getNodeName(resource);
         String objectKind = getObjectKind(resource);
         String objectName = getObjectName(resource);
+        String clusterName = getClusterName(resource); 
 
         List<ScopeLogs> scopeLogsList = resourceLogs.getScopeLogs();
         for (ScopeLogs scopeLogs : scopeLogsList) {
@@ -63,9 +64,11 @@ public class EventCommandHandler {
                     EventsDTO eventsDTO = new EventsDTO();
                     eventsDTO.setSeverityText(severityText);
                     eventsDTO.setCreatedTime(createdTime);
+                    System.out.println("-------CreatedTime------"+eventsDTO.getCreatedTime());
                     eventsDTO.setNodeName(nodeName);
                     eventsDTO.setObjectKind(objectKind);
                     eventsDTO.setObjectName(objectName);
+                    eventsDTO.setClusterName(clusterName);
                     
                     List<ScopeLogs> singleScopeLogsList = new ArrayList<>();
                     singleScopeLogsList.add(scopeLogs);
@@ -102,6 +105,15 @@ public class EventCommandHandler {
         return resource.getAttributes()
                 .stream()
                 .filter(attribute -> "k8s.object.name".equals(attribute.getKey()))
+                .findFirst()
+                .map(attribute -> attribute.getValue().getStringValue())
+                .orElse(null);
+    }
+
+    private String getClusterName(Resource resource) {
+        return resource.getAttributes()
+                .stream()
+                .filter(attribute -> "k8s.cluster.name".equals(attribute.getKey()))
                 .findFirst()
                 .map(attribute -> attribute.getValue().getStringValue())
                 .orElse(null);
