@@ -1,4 +1,6 @@
 package com.zaga.entity.otelmetric.scopeMetric;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +11,7 @@ public class Metric {
     private String name;
     private String description;
     private String unit;
+    @JsonProperty("summary")
     private MetricSummary summary;
     private MetricSum sum;
     private MetricGauge gauge;
