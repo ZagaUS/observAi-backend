@@ -228,6 +228,7 @@ public class MetricCommandHandler {
         try {
             for (ResourceMetric resourceMetric : metrics.getResourceMetrics()) {
                 String serviceName = getServiceName(resourceMetric);
+                String language = getLanguage(resourceMetric);
                 for (ScopeMetric scopeMetric : resourceMetric.getScopeMetrics()) {
                     Date createdTime = null;
                     Double cpuUsage = null;
@@ -274,6 +275,7 @@ public class MetricCommandHandler {
 
                                 MetricDTO metricDTO = new MetricDTO();
                                 metricDTO.setMemoryUsage(memoryUsageInMb);
+                                metricDTO.setLanguage(language);
                                 metricDTO.setDate(createdTime);
                                 metricDTO.setServiceName(serviceName);
                                 metricDTO.setCpuUsage(cpuUsage);
@@ -293,6 +295,97 @@ public class MetricCommandHandler {
 
         return metricDTOs;
     }
+
+
+    
+private List<MetricDTO> extractAndMapDotnetMemoryUsage(OtelMetric metrics) {
+    List<MetricDTO> metricDTOs = new ArrayList<>();
+    Integer memoryUsage = 0;
+    Double cpuUsage = null;
+    Date createdTime = null;
+  
+    try {
+        for (ResourceMetric resourceMetric : metrics.getResourceMetrics()) {
+            String serviceName = getServiceName(resourceMetric);
+            String language = getLanguage(resourceMetric);
+            for (ScopeMetric scopeMetric : resourceMetric.getScopeMetrics()) {
+                String name = scopeMetric.getScope().getName();
+                if (name != null && name.contains("OpenTelemetry.Instrumentation.Process")) {
+                    for (Metric metric : scopeMetric.getMetrics()) {
+                        String metricName = metric.getName();
+                        if (isDotNetMemoryMetric(metricName)) {
+                            if (metric.getSum() != null) {
+                                MetricSum metricSum = metric.getSum();
+                                for (SumDataPoint sumDataPoint : metricSum.getDataPoints()) {
+                                    String startTimeUnixNano = sumDataPoint.getTimeUnixNano();
+                                    createdTime = convertUnixNanoToLocalDateTime(startTimeUnixNano);
+                                    if (sumDataPoint.getAsInt() != null && !sumDataPoint.getAsInt().isEmpty()) {
+                                        memoryUsage += Integer.parseInt(sumDataPoint.getAsInt());
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if (isDotNetCpuMetric(metricName)) {
+                            if (metric.getSum() != null) {
+                                MetricSum metricSum = metric.getSum();
+                                for (SumDataPoint sumDataPoint : metricSum.getDataPoints()) {
+                                    String asInt = sumDataPoint.getAsInt();
+                                    if (asInt != null) {
+                                        cpuUsage = Double.parseDouble(asInt);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        
+                        
+                    }
+                }
+            }
+
+            MetricDTO metricDTO = new MetricDTO();
+            metricDTO.setMemoryUsage(memoryUsage);
+            metricDTO.setDate(createdTime);
+            metricDTO.setLanguage(language);
+            metricDTO.setServiceName(serviceName);
+            metricDTO.setCpuUsage(cpuUsage); 
+            System.out.println("+++++cpu-----------------"+ cpuUsage);
+            metricDTOs.add(metricDTO);
+        }
+        
+        if (!metricDTOs.isEmpty()) {
+            metricDtoRepo.persist(metricDTOs.subList(metricDTOs.size() - 1, metricDTOs.size()));
+        }
+    } catch (Exception e) {
+        // Handle any exceptions
+    }
+System.out.println("cpu usage--------------"+cpuUsage);
+System.out.println("memory usage--------------"+memoryUsage);
+    return metricDTOs;
+}
+
+
+private boolean isDotNetCpuMetric(String metricName) {
+    return Set.of("process.cpu.count")
+            .contains(metricName);
+}
+
+private boolean isDotNetMemoryMetric(String metricName) {
+    return Set.of("process.memory.usage").contains(metricName);
+}
+
+
+private String getLanguage(ResourceMetric resourceMetric) {
+    return resourceMetric
+            .getResource()
+            .getAttributes()
+            .stream()
+            .filter(attribute -> "telemetry.sdk.language".equals(attribute.getKey()))
+            .findFirst()
+            .map(attribute -> attribute.getValue().getStringValue())
+            .orElse(null);
+}
 
     private boolean isSupportedMetric(String metricName) {
         return Set.of(
