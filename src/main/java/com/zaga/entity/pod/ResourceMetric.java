@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class ResourceMetric {
     private Resource resource;
     private List<ScopeMetrics> scopeMetrics;
+    private String schemaUrl;
 }

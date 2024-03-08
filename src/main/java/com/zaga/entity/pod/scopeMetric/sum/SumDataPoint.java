@@ -22,8 +22,10 @@ public class SumDataPoint {
     @JsonProperty("timeUnixNano")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private String timeUnixNano;
+    @JsonIgnore
     @JsonProperty("asInt")
     private String asInt; 
+    @JsonIgnore
     @JsonProperty("asDouble")
     private Double asDouble; 
 

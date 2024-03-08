@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Sum {
     private List<SumDataPoint> dataPoints;
-        @JsonProperty("aggregationTemporality")
+    @JsonProperty("aggregationTemporality")
     private int aggregationTemporality;
     @JsonIgnore
     @JsonProperty("isMonotonic")

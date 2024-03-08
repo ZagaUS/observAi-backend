@@ -1,6 +1,7 @@
 package com.zaga.entity.pod.scopeMetric.gauge;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -18,8 +19,10 @@ public class GaugeDataPoint {
     @JsonProperty("timeUnixNano")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private String timeUnixNano;
+    @JsonIgnore
     @JsonProperty("asInt")
     private String asInt; 
+    @JsonIgnore
     @JsonProperty("asDouble")
     private Double asDouble; 
 }
