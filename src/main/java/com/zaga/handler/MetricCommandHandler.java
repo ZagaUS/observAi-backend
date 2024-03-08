@@ -233,7 +233,7 @@ public class MetricCommandHandler {
                     Date createdTime = null;
                     Double cpuUsage = null;
                     String name = scopeMetric.getScope().getName();
-                    if (name != null && name.contains("io.opentelemetry.runtime-telemetry")) {
+                    if (name != null && name.contains("io.opentelemetry.runtime-telemetry") ) {
                         List<Metric> metricsList = scopeMetric.getMetrics();
                         for (Metric metric : metricsList) {
                             String metricName = metric.getName();
@@ -282,6 +282,9 @@ public class MetricCommandHandler {
                                 metricDTOs.add(metricDTO);
                             }
                         }
+                    }
+                    else if (name != null && name.contains("OpenTelemetry.Instrumentation.Process") ){
+                        extractAndMapDotnetMemoryUsage(metrics);
                     }
                 }
             }
@@ -343,7 +346,7 @@ private List<MetricDTO> extractAndMapDotnetMemoryUsage(OtelMetric metrics) {
                     }
                 }
             }
-
+            // Integer memoryUsageInMb = (memoryUsage / (1024 * 1024));
             MetricDTO metricDTO = new MetricDTO();
             metricDTO.setMemoryUsage(memoryUsage);
             metricDTO.setDate(createdTime);
