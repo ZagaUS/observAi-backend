@@ -9,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResourceMetrics {
-     private Resource resource;
+    private Resource resource;
     private List<ScopeMetric> scopeMetrics;
+    private String schemaUrl;
 }

@@ -19,7 +19,7 @@ public OtelPodMetric deserialize(String topic, byte[] data) {
     }
 
     try {
-        System.out.println("the dtaa is not nukl");
+        // System.out.println("the infra pod metric data is not null");
         return getObjectMapper().readValue(data, OtelPodMetric.class);
     } catch (Exception e) {
         throw new RuntimeException("Error deserializing JSON", e);

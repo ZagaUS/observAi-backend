@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Scope {
-     @JsonProperty("name")
+    @JsonProperty("name")
     private String name;
     @JsonProperty("version")
     private String version;

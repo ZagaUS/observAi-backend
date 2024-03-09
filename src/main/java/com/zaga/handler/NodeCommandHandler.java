@@ -28,10 +28,11 @@ public class NodeCommandHandler {
     NodeDTORepo nodeMetricDTORepo;
 
     public void createNodeMetric(OtelNode metrics) {
+        System.out.println("------Infra Node Metrics-------"+ metrics);
         nodeCommandRepo.persist(metrics);
 
         List<NodeMetricDTO> metricDTOs = extractAndMapNodeData(metrics);
-        System.out.println("------------------------------------------NodeMetricDTOs:-------------------------------------- " + metricDTOs.size());
+        System.out.println("------------------------------------------Infra NodeMetricDTOs:-------------------------------------- " + metricDTOs.size());
     }
 
     public List<NodeMetricDTO> extractAndMapNodeData(OtelNode metrics) {
@@ -65,16 +66,33 @@ public class NodeCommandHandler {
                                         String startTimeUnixNano = gaugeDataPoint.getTimeUnixNano();
                                         createdTime = convertUnixNanoToLocalDateTime(startTimeUnixNano);
     
-                                        if (isCpuMetric(metricName)) {
-                                            cpuUsage = gaugeDataPoint.getAsDouble();
+                                        // if (isCpuMetric(metricName)) {
+                                        //     cpuUsage = gaugeDataPoint.getAsDouble();
+                                        // }
+                                        if ("k8s.node.cpu.usage".equals(metricName) && metric.getGauge() != null) {
+                                            List<GaugeDataPoints> dataPoints = metric.getGauge().getDataPoints();
+                                            if (dataPoints != null && !dataPoints.isEmpty()) {
+                                                cpuUsage = dataPoints.get(0).getAsDouble();
+                                            }
                                         }
-    
+
+                                        if ("k8s.node.memory.usage".equals(metricName) && metric.getGauge() != null) {
+                                            List<GaugeDataPoints> dataPoints = metric.getGauge().getDataPoints();
+                                            if (dataPoints != null && !dataPoints.isEmpty()) {
+                                                String memoryUsageAsString = dataPoints.get(0).getAsInt();
+                                                if (memoryUsageAsString != null) {
+                                                    memoryUsage = Long.parseLong(memoryUsageAsString);
+                                                    // Convert memory usage from bytes to MB
+                                                    memoryUsage = memoryUsage / (1024 * 1024);
+                                                }
+                                            }
+                                        }
                                         // Assuming the memory metric is also present in GaugeDataPoint, adjust as needed
-                                        String memoryValue = gaugeDataPoint.getAsInt();
-                                        if (isMemoryMetric(metricName)) {
-                                            long currentMemoryUsage = Long.parseLong(memoryValue);
-                                            memoryUsage += currentMemoryUsage;
-                                        }
+                                        // String memoryValue = gaugeDataPoint.getAsInt();
+                                        // if (isMemoryMetric(metricName)) {
+                                        //     long currentMemoryUsage = Long.parseLong(memoryValue);
+                                        //     memoryUsage += currentMemoryUsage;
+                                        // }
                                     }
                                 }
                             }
@@ -83,7 +101,7 @@ public class NodeCommandHandler {
                         NodeMetricDTO metricDTO = new NodeMetricDTO();
                         metricDTO.setNodeName(nodeName);
                         metricDTO.setDate(createdTime != null ? createdTime : new Date());
-                        metricDTO.setMemoryUsage(memoryUsage / (1024 * 1024));
+                        metricDTO.setMemoryUsage(memoryUsage);
                         metricDTO.setCpuUsage(cpuUsage != null ? cpuUsage : 0.0);
     
                         metricDTOs.add(metricDTO);

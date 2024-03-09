@@ -10,7 +10,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 
 @ApplicationScoped
-@Identifier("node-failure-fallback")
+@Identifier("node-metric-failure-fallback")
 public class NodeMetricsDeserializerFailureHandler implements DeserializationFailureHandler<OtelNode> {
     
 

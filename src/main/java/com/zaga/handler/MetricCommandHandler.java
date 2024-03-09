@@ -346,9 +346,9 @@ private List<MetricDTO> extractAndMapDotnetMemoryUsage(OtelMetric metrics) {
                     }
                 }
             }
-            // Integer memoryUsageInMb = (memoryUsage / (1024 * 1024));
+            Integer memoryUsageInMb = (memoryUsage / (1024 * 1024));
             MetricDTO metricDTO = new MetricDTO();
-            metricDTO.setMemoryUsage(memoryUsage);
+            metricDTO.setMemoryUsage(memoryUsageInMb);
             metricDTO.setDate(createdTime);
             metricDTO.setLanguage(language);
             metricDTO.setServiceName(serviceName);

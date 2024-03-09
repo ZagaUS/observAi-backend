@@ -13,7 +13,7 @@ public class AlertConsumer {
 @Inject
 AlertPayloadRepo alertPayloadRepo;
 
-     @Incoming("alert-in")
+     // @Incoming("alert-in")
       public void consumeLogDetails(AlertPayload alertPayload) {
           // String alertPayloadString = "AlertPayload{"
           //   + "serviceName='" + alertPayload.getServiceName() + '\''

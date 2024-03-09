@@ -5,6 +5,7 @@ package com.zaga.controller;
 import com.zaga.entity.pod.OtelPodMetric;
 import com.zaga.handler.PodCommandHandler;
 import com.zaga.repo.PodCommandRepo;
+import com.zaga.repo.PodMetricDTORepo;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -24,6 +25,9 @@ PodCommandRepo podCommandRepo;
 
 @Inject
 PodCommandHandler podCommandHandler;
+
+@Inject
+PodMetricDTORepo podMetricDTORepo;
 
 @POST
 @Path("/create")

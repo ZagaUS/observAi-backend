@@ -14,7 +14,12 @@ public class NodeMetricsDeserialization implements Deserializer<OtelNode>{
    }
     @Override
     public OtelNode deserialize(String topic, byte[] data) {
-         try {
+      if (data == null || data.length == 0) {
+         return null;
+     }
+ 
+     try {
+         System.out.println("the infra node metric data is not null");
          return objectMapper.readValue(data, OtelNode.class);
        } catch (Exception e) {
           throw new RuntimeException("Error deserializing JSON", e);

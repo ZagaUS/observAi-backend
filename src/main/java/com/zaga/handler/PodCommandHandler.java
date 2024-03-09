@@ -32,6 +32,7 @@ public class PodCommandHandler {
   PodMetricDTORepo podMetricDTORepo;
 
   public void createPodMetric(OtelPodMetric metrics) {
+    System.out.println("----infra pod metrics--------"+metrics);
     podCommandRepo.persist(metrics);
 
     List<PodMetricDTO> metricDTOs = extractAndMapData(metrics);
@@ -39,85 +40,102 @@ public class PodCommandHandler {
   }
 
 
-  public List<PodMetricDTO> extractAndMapData(OtelPodMetric metrics) {
-    List<PodMetricDTO> podMetricsList = new ArrayList<>();
+public List<PodMetricDTO> extractAndMapData(OtelPodMetric metrics) {
+  List<PodMetricDTO> podMetricsList = new ArrayList<>();
 
-    try {
-        for (ResourceMetric resourceMetric : metrics.getResourceMetrics()) {
-            String podName = getPodName(resourceMetric);
-            String namespaceName = getNamespaceName(resourceMetric);
-            // System.out.println("NameSpace: " + podName + " namespace: " + namespaceName);
-            if (podName != null) {
-                PodMetricDTO podMetricDTO = new PodMetricDTO();
-                podMetricDTO.setPodName(podName);
-                podMetricDTO.setNamespaceName(namespaceName);
+  try {
+      for (ResourceMetric resourceMetric : metrics.getResourceMetrics()) {
+          String podName = getPodName(resourceMetric);
+          String namespaceName = getNamespaceName(resourceMetric);
 
-                for (ScopeMetrics scopeMetric : resourceMetric.getScopeMetrics()) {
-                    Date createdTime = null;
-                    Double cpuUsage = null;
-                    Long memoryUsage = 0L;
+          if (podName != null) {
+              PodMetricDTO podMetricDTO = new PodMetricDTO();
+              podMetricDTO.setPodName(podName);
+              podMetricDTO.setNamespaceName(namespaceName);
 
-                    String name = scopeMetric.getScope().getName();
+              for (ScopeMetrics scopeMetric : resourceMetric.getScopeMetrics()) {
+                  Date createdTime = null;
+                  Double cpuUsage = null;
+                  Long memoryUsage = null;
 
-                    if (name != null && name.contains("otelcol/kubeletstatsreceiver")) {
-                        List<Metric> metricsList = scopeMetric.getMetrics();
+                  String name = scopeMetric.getScope().getName();
 
-                        for (Metric metric : metricsList) {
-                            String metricName = metric.getName();
+                  if (name != null && name.contains("otelcol/kubeletstatsreceiver")) {
+                      List<Metric> metricsList = scopeMetric.getMetrics();
 
-                            if (metric.getGauge() != null) {
-                                Gauge metricGauge = metric.getGauge();
-                                List<GaugeDataPoint> gaugeDataPoints = metricGauge.getDataPoints();
+                      for (Metric metric : metricsList) {
+                          String metricName = metric.getName();
+                          Gauge metricGauge = metric.getGauge();
 
-                                for (GaugeDataPoint gaugeDataPoint : gaugeDataPoints) {
-                                    String startTimeUnixNano = gaugeDataPoint.getTimeUnixNano();
-                                    createdTime = convertUnixNanoToLocalDateTime(startTimeUnixNano);
+                          if (metricGauge != null) {
+                              List<GaugeDataPoint> gaugeDataPoints = metricGauge.getDataPoints();
 
-                                    if (isCpuMetric(metricName)) {
-                                        cpuUsage = gaugeDataPoint.getAsDouble();
-                                    }
+                              for (GaugeDataPoint gaugeDataPoint : gaugeDataPoints) {
+                                  String startTimeUnixNano = gaugeDataPoint.getTimeUnixNano();
+                                  createdTime = convertUnixNanoToLocalDateTime(startTimeUnixNano);
+                              }
+                          }
 
+                          if ("k8s.pod.cpu.utilization".equals(metricName) && metricGauge != null) {
+                              List<GaugeDataPoint> dataPoints = metricGauge.getDataPoints();
+                              if (dataPoints != null && !dataPoints.isEmpty()) {
+                                  cpuUsage = dataPoints.get(0).getAsDouble();
+                              }
+                          }
 
-                                    String memoryValue = gaugeDataPoint.getAsInt();
-                                    if (isMemoryMetric(metricName)) {
-                                        long currentMemoryUsage = Long.parseLong(memoryValue);
-                                        memoryUsage += currentMemoryUsage;
-                                    }
-                                }
+                        //   if ("k8s.pod.memory.usage".equals(metricName) && metricGauge != null) {
+                        //     List<GaugeDataPoint> dataPoints = metricGauge.getDataPoints();
+                        //     if (dataPoints != null && !dataPoints.isEmpty()) {
+                        //         memoryUsage = Long.parseLong(dataPoints.get(0).getAsInt());
+                        //     }
+                        // }
+
+                      //   if ("k8s.pod.memory.usage".equals(metricName) && metricGauge != null) {
+                      //     List<GaugeDataPoint> dataPoints = metricGauge.getDataPoints();
+                      //     if (dataPoints != null && !dataPoints.isEmpty()) {
+                      //         memoryUsage = Long.parseLong(dataPoints.get(0).getAsInt());
+                      //         memoryUsage = memoryUsage / (1024 * 1024);
+                      //     }
+                      // }
+
+                      if ("k8s.pod.memory.usage".equals(metricName) && metricGauge != null) {
+                        List<GaugeDataPoint> dataPoints = metricGauge.getDataPoints();
+                        if (dataPoints != null && !dataPoints.isEmpty()) {
+                            String memoryUsageAsString = dataPoints.get(0).getAsInt();
+                            if (memoryUsageAsString != null) {
+                                memoryUsage = Long.parseLong(memoryUsageAsString);
+                                // Convert memory usage from bytes to MB
+                                memoryUsage = memoryUsage / (1024 * 1024);
                             }
                         }
                     }
+                    
 
-                    podMetricDTO.setDate(createdTime != null ? createdTime : new Date());
-                    podMetricDTO.setMemoryUsage(memoryUsage / (1024 * 1024));
-                    podMetricDTO.setCpuUsage(cpuUsage != null ? cpuUsage : 0.0);
 
-                }
-                
-                podMetricsList.add(podMetricDTO);
-            }
-        }
-        
-        podMetricDTORepo.persist(podMetricsList);
-        System.out.println("Infra Pod Metric Aggregated-----------------------" + podMetricsList.size());
+                      }
+                  }
 
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
+                  podMetricDTO.setDate(createdTime != null ? createdTime : new Date());
+                  podMetricDTO.setCpuUsage(cpuUsage != null ? cpuUsage : 0.0);
+                  System.out.println("----createdTime-----"+createdTime);
+                  System.out.println("cpu usage-----------"+cpuUsage);
+                  podMetricDTO.setMemoryUsage(memoryUsage != null ? memoryUsage : 0L);
+                  System.out.println("----memoryUsage----"+memoryUsage);
+              }
 
-    return podMetricsList;
+              podMetricsList.add(podMetricDTO);
+          }
+      }
+
+      podMetricDTORepo.persist(podMetricsList);
+      System.out.println("Aggregated-----------------------" + podMetricsList.size());
+
+  } catch (Exception e) {
+      e.printStackTrace();
+  }
+
+  return podMetricsList;
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
  

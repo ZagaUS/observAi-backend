@@ -13,7 +13,6 @@ public class SumDataPoints {
     @JsonProperty("asDouble")
     private Double asDouble;
     @JsonProperty("asInt")
-    @JsonIgnore
     private String asInt;
     @JsonProperty("timeUnixNano")
     private String timeUnixNano;

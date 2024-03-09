@@ -20,7 +20,7 @@ public class PodMetricDTO extends PanacheMongoEntity{
     // private List<MetricDTO> metrics = new ArrayList<>();
     private Date date;
     private Double cpuUsage;
-    private Long memoryUsage;
+     private Long memoryUsage;
     private String podName;
     private String namespaceName;
 }
