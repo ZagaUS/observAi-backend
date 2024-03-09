@@ -1,14 +1,17 @@
 package com.zaga.handler;
 
-import com.zaga.entity.node.OtelNode;
-import com.zaga.entity.node.ResourceMetrics;
-import com.zaga.entity.node.ScopeMetric;
-import com.zaga.entity.node.scopeMetrics.Metrics;
-import com.zaga.entity.node.scopeMetrics.gauge.Gauge;
-import com.zaga.entity.node.scopeMetrics.gauge.GaugeDataPoints;
+import com.zaga.entity.clusterutilization.OtelClusterUutilization;
+import com.zaga.entity.clusterutilization.ResourceMetric;
+import com.zaga.entity.clusterutilization.ScopeMetric;
+import com.zaga.entity.clusterutilization.scopeMetric.Metric;
+import com.zaga.entity.clusterutilization.scopeMetric.MetricGauge;
+import com.zaga.entity.clusterutilization.scopeMetric.gauge.GaugeDataPoint;
+import com.zaga.entity.queryentity.cluster_utilization.ClusterUtilizationDTO;
 import com.zaga.entity.queryentity.node.NodeMetricDTO;
+import com.zaga.repo.ClusterUtilizationDTORepo;
+import com.zaga.repo.ClusterUtilizationRepo;
 import com.zaga.repo.NodeDTORepo;
-import com.zaga.repo.NodeMetricRepo;
+
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -22,24 +25,26 @@ import java.util.*;
 public class NodeCommandHandler {
 
     @Inject
-    NodeMetricRepo nodeCommandRepo;
+    // NodeMetricRepo nodeCommandRepo;
+    ClusterUtilizationRepo cluster_utilizationRepo;
 
     @Inject
     NodeDTORepo nodeMetricDTORepo;
+    
 
-    public void createNodeMetric(OtelNode metrics) {
-        System.out.println("------Infra Node Metrics-------"+ metrics);
-        nodeCommandRepo.persist(metrics);
+    public void createNodeMetric(OtelClusterUutilization cluster_utilization) {
+        System.out.println("------Infra Node Metrics-------"+ cluster_utilization);
+        cluster_utilizationRepo.persist(cluster_utilization);
 
-        List<NodeMetricDTO> metricDTOs = extractAndMapNodeData(metrics);
+        List<NodeMetricDTO> metricDTOs = extractAndMapNodeData(cluster_utilization);
         System.out.println("------------------------------------------Infra NodeMetricDTOs:-------------------------------------- " + metricDTOs.size());
     }
 
-    public List<NodeMetricDTO> extractAndMapNodeData(OtelNode metrics) {
+    public List<NodeMetricDTO> extractAndMapNodeData(OtelClusterUutilization metrics) {
         List<NodeMetricDTO> metricDTOs = new ArrayList<>();
     
         try {
-            for (ResourceMetrics resourceMetric : metrics.getResourceMetrics()) {
+            for (ResourceMetric resourceMetric : metrics.getResourceMetrics()) {
                 String nodeName = getNodeName(resourceMetric);
                 if (nodeName != null) {
                     // NodeMetricDTO nodeMetricDTO = new NodeMetricDTO();
@@ -51,41 +56,26 @@ public class NodeCommandHandler {
                         Long memoryUsage = 0L;
     
                         String name = scopeMetric.getScope().getName();
-    
                         if (name != null && name.contains("otelcol/kubeletstatsreceiver")) {
-                            List<Metrics> metricsList = scopeMetric.getMetrics();
+                            List<Metric> metricsList = scopeMetric.getMetrics();
     
-                            for (Metrics metric : metricsList) {
+                            for (Metric metric : metricsList) {
                                 String metricName = metric.getName();
     
                                 if (metric.getGauge() != null) {
-                                    Gauge metricGauge = metric.getGauge();
-                                    List<GaugeDataPoints> gaugeDataPoints = metricGauge.getDataPoints();
+                                    MetricGauge metricGauge = metric.getGauge();
+                                    List<GaugeDataPoint> gaugeDataPoints = metricGauge.getDataPoints();
     
-                                    for (GaugeDataPoints gaugeDataPoint : gaugeDataPoints) {
+                                    for (GaugeDataPoint gaugeDataPoint : gaugeDataPoints) {
                                         String startTimeUnixNano = gaugeDataPoint.getTimeUnixNano();
                                         createdTime = convertUnixNanoToLocalDateTime(startTimeUnixNano);
     
-                                        // if (isCpuMetric(metricName)) {
-                                        //     cpuUsage = gaugeDataPoint.getAsDouble();
-                                        // }
-                                        if ("k8s.node.cpu.usage".equals(metricName) && metric.getGauge() != null) {
-                                            List<GaugeDataPoints> dataPoints = metric.getGauge().getDataPoints();
-                                            if (dataPoints != null && !dataPoints.isEmpty()) {
-                                                cpuUsage = dataPoints.get(0).getAsDouble();
-                                            }
-                                        }
-
-                                        if ("k8s.node.memory.usage".equals(metricName) && metric.getGauge() != null) {
-                                            List<GaugeDataPoints> dataPoints = metric.getGauge().getDataPoints();
-                                            if (dataPoints != null && !dataPoints.isEmpty()) {
-                                                String memoryUsageAsString = dataPoints.get(0).getAsInt();
-                                                if (memoryUsageAsString != null) {
-                                                    memoryUsage = Long.parseLong(memoryUsageAsString);
-                                                    // Convert memory usage from bytes to MB
-                                                    memoryUsage = memoryUsage / (1024 * 1024);
-                                                }
-                                            }
+                                        if (isCpuMetric(metricName)) {
+                                            String cpuData = gaugeDataPoint.getAsDouble();
+                                            cpuUsage = Double.parseDouble(cpuData);
+                                        } else if (isMemoryMetric(metricName)) {
+                                            memoryUsage += Long.parseLong(gaugeDataPoint.getAsInt());
+                                            memoryUsage = memoryUsage / (1024 * 1024);
                                         }
                                         // Assuming the memory metric is also present in GaugeDataPoint, adjust as needed
                                         // String memoryValue = gaugeDataPoint.getAsInt();
@@ -122,10 +112,11 @@ public class NodeCommandHandler {
     }
 
     private boolean isCpuMetric(String metricName) {
-        return Set.of("k8s.node.cpu.utilization").contains(metricName);
+        return metricName.equals("k8s.node.cpu.usage");
     }
+    
 
-    private String getNodeName(ResourceMetrics resourceMetric) {
+    private String getNodeName(ResourceMetric resourceMetric) {
         return resourceMetric
                 .getResource()
                 .getAttributes()

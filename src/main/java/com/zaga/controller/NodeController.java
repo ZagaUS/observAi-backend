@@ -1,9 +1,12 @@
 package com.zaga.controller;
 
-import com.zaga.entity.node.OtelNode;
+import com.zaga.entity.clusterutilization.OtelClusterUutilization;
+// import com.zaga.entity.node.OtelNode;
+import com.zaga.handler.ClusterUtilizationHandler;
 import com.zaga.handler.NodeCommandHandler;
+import com.zaga.repo.ClusterUtilizationRepo;
 import com.zaga.repo.NodeDTORepo;
-import com.zaga.repo.NodeMetricRepo;
+// import com.zaga.repo.NodeMetricRepo;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -19,21 +22,29 @@ import jakarta.ws.rs.core.Response;
 
 public class NodeController {
     
-@Inject
-NodeMetricRepo repo;
+// @Inject
+// NodeMetricRepo repo;
 
-@Inject
+ @Inject
 NodeCommandHandler nodeCommandHandler;
 
-@Inject
-NodeDTORepo nodeDTORepo; 
+// @Inject
+// NodeDTORepo nodeDTORepo; 
+
+ @Inject
+    ClusterUtilizationHandler cluster_utilizationHandler;
+
+    @Inject
+    ClusterUtilizationRepo cluster_utilizationRepo;
+
+
 
     @POST
     @Path("/create")
-    public Response createNodeMetrics(OtelNode node){
-        repo.persist(node);
-        nodeCommandHandler.extractAndMapNodeData(node);
-        return Response.status(Response.Status.CREATED).entity(node).build();
+    public Response createNodeMetrics(OtelClusterUutilization cluster_utilization){
+        // cluster_utilizationRepo.persist(cluster_utilization);
+        nodeCommandHandler.extractAndMapNodeData(cluster_utilization);
+        return Response.status(Response.Status.CREATED).entity(cluster_utilization).build();
 
     }
 

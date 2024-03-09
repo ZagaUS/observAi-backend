@@ -11,7 +11,6 @@ import java.util.Map;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 
 import com.zaga.entity.kepler.KeplerMetric;
-import com.zaga.entity.node.OtelNode;
 import com.zaga.entity.pod.OtelPodMetric;
 import com.zaga.entity.queryentity.node.NodeMetricDTO;
 import com.zaga.entity.queryentity.pod.PodMetricDTO;

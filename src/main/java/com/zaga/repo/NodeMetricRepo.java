@@ -1,11 +1,11 @@
-package com.zaga.repo;
+// package com.zaga.repo;
 
-import com.zaga.entity.node.OtelNode;
+// import com.zaga.entity.node.OtelNode;
 
-import io.quarkus.mongodb.panache.PanacheMongoRepository;
-import jakarta.enterprise.context.ApplicationScoped;
+// import io.quarkus.mongodb.panache.PanacheMongoRepository;
+// import jakarta.enterprise.context.ApplicationScoped;
 
-@ApplicationScoped
-public class NodeMetricRepo implements PanacheMongoRepository<OtelNode>{
+// @ApplicationScoped
+// public class NodeMetricRepo implements PanacheMongoRepository<OtelNode>{
     
-}
+// }
