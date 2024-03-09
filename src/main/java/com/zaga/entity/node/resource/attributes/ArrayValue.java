@@ -1,14 +1,14 @@
-package com.zaga.entity.node.resource.attributes;
+// package com.zaga.entity.node.resource.attributes;
 
-import java.util.List;
+// import java.util.List;
 
-import lombok.*;
+// import lombok.*;
 
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ArrayValue {
-        private List<Value> values;
+// @Data
+// @AllArgsConstructor
+// @NoArgsConstructor
+// public class ArrayValue {
+//         private List<Value> values;
 
-}
+// }

@@ -5,7 +5,9 @@ import java.util.List;
 import com.zaga.entity.node.scopeMetrics.Metrics;
 import com.zaga.entity.node.scopeMetrics.Scope;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor

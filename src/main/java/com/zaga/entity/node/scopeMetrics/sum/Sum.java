@@ -3,21 +3,22 @@ package com.zaga.entity.node.scopeMetrics.sum;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Sum {
-    @JsonProperty("dataPoints")
+    @JsonIgnoreProperties("dataPoints")
     private List<SumDataPoints> dataPoints;
-    @JsonIgnore
-    @JsonProperty("isMonotonic")
-    private boolean isMonotonic;
-    @JsonIgnore
-    @JsonProperty("aggregationTemporality")
+    @JsonIgnoreProperties("aggregationTemporality")
     private int aggregationTemporality;
+    @JsonIgnoreProperties("isMonotonic")
+    private Boolean isMonotonic;
 }

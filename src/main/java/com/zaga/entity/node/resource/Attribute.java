@@ -2,8 +2,9 @@ package com.zaga.entity.node.resource;
 
 import com.zaga.entity.node.resource.attributes.Value;
 
-import lombok.*;
-
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

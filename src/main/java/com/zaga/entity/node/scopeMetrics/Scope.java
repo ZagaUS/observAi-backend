@@ -1,15 +1,17 @@
 package com.zaga.entity.node.scopeMetrics;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Scope {
-    @JsonProperty("name")
+    // @JsonProperty("name")
     private String name;
-    @JsonProperty("version")
+    // @JsonProperty("version")
     private String version;
 }

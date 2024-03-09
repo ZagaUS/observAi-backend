@@ -1,6 +1,8 @@
 package com.zaga.entity.node.resource.attributes;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
@@ -8,6 +10,6 @@ import lombok.*;
 public class Value {
     
     private String stringValue;
-    private ArrayValue arrayValue;
+    // private ArrayValue arrayValue;
 
 }
