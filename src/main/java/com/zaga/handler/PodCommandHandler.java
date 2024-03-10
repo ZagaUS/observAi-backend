@@ -6,7 +6,6 @@ import com.zaga.entity.pod.ScopeMetrics;
 import com.zaga.entity.pod.scopeMetric.Metric;
 import com.zaga.entity.pod.scopeMetric.gauge.Gauge;
 import com.zaga.entity.pod.scopeMetric.gauge.GaugeDataPoint;
-import com.zaga.entity.queryentity.pod.MetricDTO;
 import com.zaga.entity.queryentity.pod.PodMetricDTO;
 import com.zaga.repo.PodCommandRepo;
 import com.zaga.repo.PodMetricDTORepo;

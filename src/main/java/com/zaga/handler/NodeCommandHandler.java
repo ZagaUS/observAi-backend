@@ -6,9 +6,7 @@ import com.zaga.entity.clusterutilization.ScopeMetric;
 import com.zaga.entity.clusterutilization.scopeMetric.Metric;
 import com.zaga.entity.clusterutilization.scopeMetric.MetricGauge;
 import com.zaga.entity.clusterutilization.scopeMetric.gauge.GaugeDataPoint;
-import com.zaga.entity.queryentity.cluster_utilization.ClusterUtilizationDTO;
 import com.zaga.entity.queryentity.node.NodeMetricDTO;
-import com.zaga.repo.ClusterUtilizationDTORepo;
 import com.zaga.repo.ClusterUtilizationRepo;
 import com.zaga.repo.NodeDTORepo;
 
@@ -25,7 +23,6 @@ import java.util.*;
 public class NodeCommandHandler {
 
     @Inject
-    // NodeMetricRepo nodeCommandRepo;
     ClusterUtilizationRepo cluster_utilizationRepo;
 
     @Inject
