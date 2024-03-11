@@ -78,7 +78,7 @@ public List<PodMetricDTO> extractAndMapData(OtelPodMetric metrics) {
                               }
                           }
 
-                          if ("k8s.pod.cpu.utilization".equals(metricName) && metricGauge != null) {
+                          if ("k8s.pod.cpu.usage".equals(metricName) && metricGauge != null) {
                               List<GaugeDataPoint> dataPoints = metricGauge.getDataPoints();
                               if (dataPoints != null && !dataPoints.isEmpty()) {
                                   cpuUsage = dataPoints.get(0).getAsDouble();
