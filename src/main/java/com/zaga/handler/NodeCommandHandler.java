@@ -43,6 +43,7 @@ public class NodeCommandHandler {
         try {
             for (ResourceMetric resourceMetric : metrics.getResourceMetrics()) {
                 String nodeName = getNodeName(resourceMetric);
+                String clusterName = getClusterName(resourceMetric);
                 if (nodeName != null) {
                     // NodeMetricDTO nodeMetricDTO = new NodeMetricDTO();
                   
@@ -87,6 +88,8 @@ public class NodeCommandHandler {
     
                         NodeMetricDTO metricDTO = new NodeMetricDTO();
                         metricDTO.setNodeName(nodeName);
+                        metricDTO.setClusterName(clusterName);
+                        System.out.println("------Node clusterName----"+clusterName);
                         metricDTO.setDate(createdTime != null ? createdTime : new Date());
                         metricDTO.setMemoryUsage(memoryUsage);
                         metricDTO.setCpuUsage(cpuUsage != null ? cpuUsage : 0.0);
@@ -112,6 +115,17 @@ public class NodeCommandHandler {
         return metricName.equals("k8s.node.cpu.usage");
     }
     
+
+    private String getClusterName(ResourceMetric resourceMetric) {
+        return resourceMetric
+                .getResource()
+                .getAttributes()
+                .stream()
+                .filter(attribute -> "k8s.cluster.name".equals(attribute.getKey()))
+                .findFirst()
+                .map(attribute -> attribute.getValue().getStringValue())
+                .orElse(null);
+    }
 
     private String getNodeName(ResourceMetric resourceMetric) {
         return resourceMetric

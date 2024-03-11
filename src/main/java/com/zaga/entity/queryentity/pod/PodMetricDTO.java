@@ -19,8 +19,10 @@ import lombok.NoArgsConstructor;
 public class PodMetricDTO extends PanacheMongoEntity{
     // private List<MetricDTO> metrics = new ArrayList<>();
     private Date date;
+    private String clusterName;
     private Double cpuUsage;
      private Long memoryUsage;
     private String podName;
+    private String nodeName;
     private String namespaceName;
 }

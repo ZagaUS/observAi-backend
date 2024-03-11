@@ -46,11 +46,14 @@ public List<PodMetricDTO> extractAndMapData(OtelPodMetric metrics) {
       for (ResourceMetric resourceMetric : metrics.getResourceMetrics()) {
           String podName = getPodName(resourceMetric);
           String namespaceName = getNamespaceName(resourceMetric);
+          String clusterName = getClusterName(resourceMetric);
+          // String nodeName = getNodeName(resourceMetric); 
 
           if (podName != null) {
               PodMetricDTO podMetricDTO = new PodMetricDTO();
               podMetricDTO.setPodName(podName);
               podMetricDTO.setNamespaceName(namespaceName);
+              podMetricDTO.setClusterName(clusterName);
 
               for (ScopeMetrics scopeMetric : resourceMetric.getScopeMetrics()) {
                   Date createdTime = null;
@@ -118,6 +121,8 @@ public List<PodMetricDTO> extractAndMapData(OtelPodMetric metrics) {
                   podMetricDTO.setCpuUsage(cpuUsage != null ? cpuUsage : 0.0);
                   System.out.println("----createdTime-----"+createdTime);
                   System.out.println("cpu usage-----------"+cpuUsage);
+                  podMetricDTO.setClusterName(clusterName);
+                  System.out.println("------Pod clusterName----"+clusterName);
                   podMetricDTO.setMemoryUsage(memoryUsage != null ? memoryUsage : 0L);
                   System.out.println("----memoryUsage----"+memoryUsage);
               }
@@ -226,6 +231,18 @@ public List<PodMetricDTO> extractAndMapData(OtelPodMetric metrics) {
     return Set.of("k8s.pod.cpu.utilization").contains(metricName);
   }
   
+  private String getClusterName(ResourceMetric resourceMetric) {
+    return resourceMetric
+            .getResource()
+            .getAttributes()
+            .stream()
+            .filter(attribute -> "k8s.cluster.name".equals(attribute.getKey()))
+            .findFirst()
+            .map(attribute -> attribute.getValue().getStringValue())
+            .orElse(null);
+}
+
+
   private String getNamespaceName(ResourceMetric resourceMetric) {
     return resourceMetric
       .getResource()
