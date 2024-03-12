@@ -232,7 +232,7 @@ private void sendAlert(Map<String, String> alertPayload, String message) {
   }
 
   // extraction and marshelling of data and persistance for trace
-  private List<TraceDTO> extractAndMapData(OtelTrace trace) {
+  public List<TraceDTO> extractAndMapData(OtelTrace trace) {
     List<TraceDTO> traceDTOs = new ArrayList<>();
 
     try {
@@ -320,8 +320,8 @@ private void sendAlert(Map<String, String> alertPayload, String message) {
     }
 }
 
-  // get all trace data
-  public List<OtelTrace> getTraceProduct(OtelTrace trace) {
-    return traceCommandRepo.listAll();
-}
+//   // get all trace data
+//   public List<OtelTrace> getTraceProduct(OtelTrace trace) {
+//     return traceCommandRepo.listAll();
+// }
 }
