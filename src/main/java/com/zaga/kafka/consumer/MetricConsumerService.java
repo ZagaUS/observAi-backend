@@ -2,6 +2,7 @@ package com.zaga.kafka.consumer;
 
 import com.zaga.entity.otelmetric.OtelMetric;
 import com.zaga.handler.MetricCommandHandler;
+import com.zaga.repo.MetricCommandRepo;
 
 import jakarta.inject.Inject;
 
@@ -13,14 +14,29 @@ public class MetricConsumerService {
   @Inject
   MetricCommandHandler metricCommandHandler;
 
-  @Incoming("metric-in")
+  @Inject
+  MetricCommandRepo metricCommandRepo;
+
+  @Incoming("metric-audit-in")
   public void consumeMetricDetails(OtelMetric metrics) {
     System.out.println("consumed metric data----------------");
     if (metrics != null) {
-      metricCommandHandler.createMetricProduct(metrics);
+      metricCommandRepo.persist(metrics);
     } else {
       System.out.println("Received null message. Check serialization/deserialization.");
     }
+
+  }
+
+    @Incoming("metric-in")
+    public void consumeMetricDTODetails(OtelMetric metrics) {
+      System.out.println("consumed metricDTO data----------------");
+      if (metrics != null) {
+        metricCommandHandler.extractAndMapData(metrics);
+      } else {
+        System.out.println("Received null message. Check serialization/deserialization.");
+      }
+
   }
 
   public static void main(String[] args) {
