@@ -22,13 +22,15 @@ public class TraceConsumerService {
     @Incoming("trace-audit-in")
     public void consumeTraceDetails(OtelTrace trace) {
         System.out.println("consumed trace ------------------");
+        System.out.println("------------"+trace);
         traceCommandRepo.persist(trace);
     }
 
 
     @Incoming("trace-in")
     public void consumeTraceDTODetails(OtelTrace trace) {
-        System.out.println("consumed trace DTO ------------------");
+        System.out.println("------------------[OTEL TRACE DTO] ------------------");
         traceCommandHandler.extractAndMapData(trace);
+        System.out.println("--------------------[OTEL TRACE DTO END]------------");
     }
 }

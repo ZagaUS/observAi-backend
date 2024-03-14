@@ -233,7 +233,7 @@ private void sendAlert(Map<String, String> alertPayload, String message) {
 
   // extraction and marshelling of data and persistance for trace
   public List<TraceDTO> extractAndMapData(OtelTrace trace) {
-    List<TraceDTO> traceDTOs = new ArrayList<>();
+    List<TraceDTO> traceDTOs = null;
 
     try {
         for (ResourceSpans resourceSpans : trace.getResourceSpans()) {
@@ -254,6 +254,9 @@ private void sendAlert(Map<String, String> alertPayload, String message) {
             }
 
             for (String traceIdLoop : traceIdList) {
+                if(traceDTOs == null){
+                    traceDTOs = new ArrayList<>();
+                }
                 TraceDTO traceDTO = new TraceDTO();
                 List<Spans> objectList = new ArrayList<>();
 
@@ -308,9 +311,10 @@ private void sendAlert(Map<String, String> alertPayload, String message) {
                         }
                     }
                 }
+                System.out.println("-------+++++++++++++++++++++++++++++++"+traceDTO);
                 traceDTOs.add(traceDTO);
-                traceQueryRepo.persist(traceDTOs);
-                // System.out.println("TraceDto: " + traceDTO.toString());
+                // traceQueryRepo.persist(traceDTOs);
+                traceQueryRepo.persist(traceDTO);
             }
         }
         return traceDTOs;
