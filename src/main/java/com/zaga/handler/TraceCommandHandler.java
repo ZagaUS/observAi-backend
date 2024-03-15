@@ -320,7 +320,7 @@ private void sendAlert(Map<String, String> alertPayload, String message) {
         return traceDTOs;
     } catch (Exception e) {
         e.printStackTrace();
-        return traceDTOs;
+        return null;
     }
 }
 

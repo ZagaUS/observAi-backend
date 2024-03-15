@@ -20,7 +20,7 @@ public class NodeMetricConsumerService {
     @Inject
     NodeDTORepo nodeDTORepo;
 
-  @Incoming("node-in")
+  // @Incoming("node-in")
    public void consumePodMetricDetails(OtelClusterUutilization node) {
     System.out.println("consumed infra Node metric data----------------"+node);
     if (node != null) {

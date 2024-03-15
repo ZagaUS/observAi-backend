@@ -29,7 +29,7 @@ public class KeplerConsumerService {
     @Inject
     KeplerMetricRepo keplerMetricRepo;
 
-    @Incoming("kepler-audit-in")
+    // @Incoming("kepler-audit-in")
     public void consumeKeplerDetails(KeplerMetric keplerMetric) { 
         if (keplerMetric != null) {
             System.out.println("consumed Kepler data ------------------");
@@ -40,7 +40,7 @@ public class KeplerConsumerService {
     }
 
 
-    @Incoming("kepler-in")
+    // @Incoming("kepler-in")
     public void consumeKeplerDTODetails(KeplerMetric keplerMetric) { 
         if (keplerMetric != null) {
             System.out.println("consumed KeplerDTO data ------------------");
