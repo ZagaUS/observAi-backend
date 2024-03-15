@@ -17,13 +17,13 @@ public class LogConsumerService {
       @Inject
       LogCommandRepo logCommandRepo;
        
-      // @Incoming("logs-audit-in")
+      @Incoming("logs-audit-in")
       public void consumeLogDetails(OtelLog logs) {
         System.out.println("consumed log -----------");
       logCommandRepo.persist(logs);
      }
 
-    //  @Incoming("logs-in")
+     @Incoming("logs-in")
      public void consumeLogDTODetails(OtelLog logs) {
        System.out.println("consumed logDTO -----------");
       logCommandHandler.marshalLogData(logs);

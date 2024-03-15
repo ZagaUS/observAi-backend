@@ -16,13 +16,13 @@ public class EventConsumerService {
     @Inject
     EventRepo eventRepo;
     
-    // @Incoming("event-audit-in")
+    @Incoming("event-audit-in")
       public void consumeEventDetails(OtelEvents events) {
         System.out.println("consumed Event -----------");
         eventRepo.persist(events);
      }
 
-    //  @Incoming("event-in")
+     @Incoming("event-in")
      public void consumeEventDTODetails(OtelEvents events) {
        System.out.println("consumed EventDTO -----------");
        eventCommandHandler.handleEventData(events);
