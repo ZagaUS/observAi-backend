@@ -9,26 +9,37 @@ ENV MONGODB_URL='mongodb://root:pass123@observai-mongodb-community-0.observai-mo
 ENV TRACE_BOOTSTRAP_URL='observai-kafka-bootstrap.observability-kafka.svc.cluster.local:9092'
 ENV TRACE_TOPIC='observai-main-traces-1'
 ENV TRACE_OFFSET_RESET='latest'
+ENV TRACE_TOPIC_GROUP_ID='trace'
+ENV TRACEDTO_TOPIC_GROUP_ID='tracedto'
 
 ENV LOG_BOOTSTRAP_URL='observai-kafka-bootstrap.observability-kafka.svc.cluster.local:9092'
 ENV LOG_TOPIC='observai-main-logs-1'
 ENV LOG_OFFSET_RESET='latest'
+ENV LOGS_TOPIC_GROUP_ID='log'
+ENV LOGDTO_TOPIC_GROUP_ID='logdto'
 
 ENV METRIC_BOOTSTRAP_URL='observai-kafka-bootstrap.observability-kafka.svc.cluster.local:9092'
 ENV METRIC_TOPIC='observai-main-metrics-1'
 ENV METRIC_OFFSET_RESET='latest'
+ENV METRIC_TOPIC_GROUP_ID='metric'
+ENV METRICDTO_TOPIC_GROUP_ID='metricdto'
 
 ENV KEPLER_BOOTSTRAP_URL='observai-kafka-bootstrap.observability-kafka.svc.cluster.local:9092'
 ENV KEPLER_TOPIC='kepler-zaga-vm'
 ENV KEPLER_OFFSET_RESET='latest'
+ENV KEPLER_TOPIC_GROUP_ID='kepler'
+ENV KEPLERDTO_TOPIC_GROUP_ID='keplerdto'
 
 ENV PODMETRIC_BOOTSTRAP_URL='infra-kafka-bootstrap.observability-kafka.svc.cluster.local:9092'
 ENV PODMETRIC_TOPIC='kubeletstats-pod-receiver'
 ENV PODMETRIC_OFFSET_RESET='latest'
+ENV PODMETRIC_TOPIC_GROUP_ID='pod'
+ENV PODMETRICDTO_TOPIC_GROUP_ID='poddto'
 
 ENV NODEMETRIC_BOOTSTRAP_URL='infra-kafka-bootstrap.observability-kafka.svc.cluster.local:9092'
 ENV NODEMETRIC_TOPIC='kubeletstats-node-receiver'
 ENV NODEMETRIC_OFFSET_RESET='latest'
+ENV NODEMETRIC_TOPIC_GROUP_ID='node'
 
 ENV ALERT_BOOTSTRAP_URL='observai-kafka-bootstrap.observability-kafka.svc.cluster.local:9092'
 ENV ALERT_TOPIC='AlertTopic'
@@ -37,11 +48,15 @@ ENV ALERT_OFFSET_RESET='latest'
 ENV EVENT_BOOTSTRAP_URL='infra-kafka-bootstrap.observability-kafka.svc.cluster.local:9092'
 ENV EVENT_TOPIC='events_data'
 ENV EVENT_OFFSET_RESET='latest'
+ENV EVENTDTO_TOPIC_GROUP_ID='eventdto'
+ENV EVENT_TOPIC_GROUP_ID='event'
 
 
 ENV CLUSTER_UTILIZATION_BOOTSTRAP_URL='infra-kafka-bootstrap.observability-kafka.svc.cluster.local:9092'
 ENV CLUSTER_UTILIZATION_TOPIC='kubelet_node_stats'
 ENV CLUSTER_UTILIZATION_OFFSET_RESET='latest'
+ENV CLUSTER_UTILIZATION_GROUP_ID='clusterUtil'
+ENV CLUSTER_UTILIZATIONDTO_GROUP_ID='clustterUtildto'
 
 # We make four distinct layers so if there are application changes the library layers can be re-used
 COPY --chown=185 target/quarkus-app/lib/ /deployments/lib/
