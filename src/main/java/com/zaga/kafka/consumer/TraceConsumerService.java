@@ -15,6 +15,7 @@ import com.zaga.entity.auth.ServiceListNew;
 import com.zaga.entity.oteltrace.OtelTrace;
 import com.zaga.entity.queryentity.trace.TraceDTO;
 import com.zaga.handler.TraceCommandHandler;
+import com.zaga.kafka.alertProducer.AlertProducer;
 import com.zaga.kafka.websocket.WebsocketAlertProducer;
 import com.zaga.repo.ServiceListRepo;
 import com.zaga.repo.TraceCommandRepo;
@@ -35,6 +36,9 @@ public class TraceConsumerService {
 
     @Inject
     ServiceListRepo serviceListRepo;
+
+    @Inject
+    AlertProducer alertProducer;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
@@ -125,6 +129,15 @@ public class TraceConsumerService {
                 String traceAlertMessage = ruleData.getTracecAlertSeverityText() + " - Duration "
                         + traceDTO.getDuration()
                         + " exceeded for this service: " + serviceName + " at" + traceDTO.getCreatedTime();
+                AlertPayload alertTracePayload = new AlertPayload();
+
+                alertTracePayload.setServiceName(serviceName);
+                alertTracePayload.setAlertMessage(traceAlertMessage);
+                alertTracePayload.setTraceId(traceDTO.getTraceId());
+                alertTracePayload.setCreatedTime(traceDTO.getCreatedTime());
+                alertTracePayload.setType(ruleData.getRuleType());
+
+                alertProducer.kafkaSend(alertTracePayload);
 
             }
         }
