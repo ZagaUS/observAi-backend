@@ -18,7 +18,7 @@ public class PodMetricsConsumerService {
     @Inject
     PodMetricDTORepo podMetricDTORepo;
 
-  // @Incoming("pod-audit-in")
+  @Incoming("pod-audit-in")
   public void consumePodMetricDetails(OtelPodMetric podMetrics) {
     System.out.println("-------------consumed infra podmetric data----------------"+podMetrics);
     if (podMetrics != null) {

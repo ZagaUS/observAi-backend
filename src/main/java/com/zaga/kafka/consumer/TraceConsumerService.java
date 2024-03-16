@@ -42,7 +42,7 @@ public class TraceConsumerService {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-    // @Incoming("trace-audit-in")
+    @Incoming("trace-audit-in")
     public void consumeTraceDetails(OtelTrace trace) {
         System.out.println("consumed trace ------------------");
         System.out.println("------------" + trace);
