@@ -20,7 +20,6 @@ import com.zaga.kafka.websocket.WebsocketAlertProducer;
 import com.zaga.repo.LogCommandRepo;
 import com.zaga.repo.ServiceListRepo;
 
-import io.vertx.core.Vertx;
 import jakarta.inject.Inject;
 import jakarta.websocket.EncodeException;
 
