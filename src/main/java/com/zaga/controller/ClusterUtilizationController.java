@@ -1,7 +1,15 @@
 package com.zaga.controller;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import com.zaga.entity.clusterutilization.OtelClusterUutilization;
 import com.zaga.handler.ClusterUtilizationHandler;
+import com.zaga.kafka.consumer.ClusterUtilizationConsumer;
 import com.zaga.repo.ClusterUtilizationRepo;
 
 import jakarta.inject.Inject;
@@ -23,6 +31,13 @@ public class ClusterUtilizationController {
     @Inject
     ClusterUtilizationRepo cluster_utilizationRepo;
 
+    @Inject
+    @ConfigProperty(name = "us.cluster.url")
+    String usClusterUrl;
+
+      @Inject
+    ClusterUtilizationConsumer clusterUtilizationConsumer;
+
     @POST
     @Path("/create_clusterUtilization")
     public Response createEvent (OtelClusterUutilization cluster_utilization){
@@ -34,7 +49,42 @@ public class ClusterUtilizationController {
         return Response.status(500).entity(e.getMessage()).build();
         
       }
+    }
+  
+    
+ 
+    
+    @POST
+    @Path("/create_cluster")
+    public void consumeClusterUtilization(OtelClusterUutilization clusterUtilization) {
+        System.out.println("###############Consumed cluster_utilization------" + clusterUtilization);
+        String destinationIndiaUrl = "https://api.zagaopenshift.zagaopensource.com:6443/cluster_utilization/create_cluster";
+        replicateData(clusterUtilization, destinationIndiaUrl);
+        System.out.println("------------Data replicated to " + destinationIndiaUrl);
+        clusterUtilizationConsumer.consumeClusterUtilizationDetails(clusterUtilization);
+        clusterUtilizationConsumer.consumeClusterUtilizationDTODetails(clusterUtilization);
+    }
+    
+    private void replicateData(OtelClusterUutilization data, String destinationIndiaUrl) {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI(destinationIndiaUrl))
+                    .header("Content-Type", "application/json") 
+                    .POST(HttpRequest.BodyPublishers.ofString(data.toString()))
+                    .build();
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenAccept(response -> System.out.println("Replication response code: " + response.statusCode()))
+                    .exceptionally(e -> {
+                        e.printStackTrace();
+                        return null;
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     
 
-}
+
 }
