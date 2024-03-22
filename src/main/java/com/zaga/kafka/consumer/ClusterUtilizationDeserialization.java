@@ -14,7 +14,7 @@ public class ClusterUtilizationDeserialization implements Deserializer<OtelClust
       
  @Override
     public OtelClusterUutilization deserialize(String topic, byte[] data) {
-      System.out.println("------------------[KAFKA/CONSUMER/DESERIALIZATION]---------------- " + data);
+      // System.out.println("------------------[KAFKA/CONSUMER/DESERIALIZATION]---------------- " + data);
       try {
          return objectMapper.readValue(data, OtelClusterUutilization.class);
        } catch (Exception e) {
