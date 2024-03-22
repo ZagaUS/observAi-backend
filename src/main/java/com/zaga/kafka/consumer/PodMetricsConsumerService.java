@@ -51,7 +51,7 @@ private void reallocateData(OtelPodMetric podMetrics) {
                 .build();
 
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenAccept(response -> System.out.println("Replication response code: " + response.statusCode()))
+                .thenAccept(response -> System.out.println("response code: " + response.statusCode()))
                 .exceptionally(e -> {
                     e.printStackTrace();
                     return null;
@@ -88,7 +88,7 @@ private void relocateData(OtelPodMetric podMetrics) {
                 .build();
 
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenAccept(response -> System.out.println("Replication response code: " + response.statusCode()))
+                .thenAccept(response -> System.out.println(" response code: " + response.statusCode()))
                 .exceptionally(e -> {
                     e.printStackTrace();
                     return null;
