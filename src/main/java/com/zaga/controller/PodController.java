@@ -36,6 +36,34 @@ public Response createPodMetric(OtelPodMetric podMetric) {
     return Response.status(Response.Status.CREATED).entity(podMetric).build();
 }
 
+@POST
+@Path("/create_Pod_audit")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public Response createAudit(OtelPodMetric podMetric) {
+    try {
+        podCommandRepo.persist(podMetric);
+        System.out.println("Pod metrics data persisted*****************: " + podMetric);
+        return Response.ok(podMetric).build();
+    } catch (Exception e) {
+        System.err.println("Error while persisting pod metrics data: " + e.getMessage());
+        return Response.serverError().entity(e.getMessage()).build();
+    }
+}
 
+@POST
+@Path("/create_clusterDTO")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public Response createDTO(OtelPodMetric podMetric) {
+    try {
+        podCommandHandler.extractAndMapData(podMetric);
+        System.out.println("PodDTO metrics data persisted*****************: " + podMetric);
+        return Response.ok(podMetric).build();
+    } catch (Exception e) {
+        System.err.println("Error while persisting pod metrics data: " + e.getMessage());
+        return Response.serverError().entity(e.getMessage()).build();
+    }
+}
 
 }
