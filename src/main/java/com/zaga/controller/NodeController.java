@@ -21,15 +21,11 @@ import jakarta.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 
 public class NodeController {
-    
-// @Inject
-// NodeMetricRepo repo;
+
 
  @Inject
 NodeCommandHandler nodeCommandHandler;
 
-// @Inject
-// NodeDTORepo nodeDTORepo; 
 
  @Inject
     ClusterUtilizationHandler cluster_utilizationHandler;
@@ -46,6 +42,22 @@ NodeCommandHandler nodeCommandHandler;
         nodeCommandHandler.extractAndMapNodeData(cluster_utilization);
         return Response.status(Response.Status.CREATED).entity(cluster_utilization).build();
 
+    }
+
+    @POST
+    @Path("/create_NodeDTO")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response createNodeDTO(OtelClusterUutilization cluster_Utilization) {
+      try {
+        System.out.println("Received JSON data: " + cluster_Utilization);
+        nodeCommandHandler.createNodeMetric(cluster_Utilization);
+        System.out.println("---------------------NodeDTO"+cluster_Utilization);
+        return Response.status(200).entity(cluster_Utilization).build();
+
+      } catch (Exception e) {
+        return Response.status(500).entity(e.getMessage()).build();
+        
+      }
     }
 
 }

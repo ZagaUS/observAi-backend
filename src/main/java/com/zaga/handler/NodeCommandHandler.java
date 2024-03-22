@@ -30,7 +30,7 @@ public class NodeCommandHandler {
     
 
     public void createNodeMetric(OtelClusterUutilization cluster_utilization) {
-        System.out.println("------Infra Node Metrics-------"+ cluster_utilization);
+        // System.out.println("------Infra Node Metrics-------"+ cluster_utilization);
         cluster_utilizationRepo.persist(cluster_utilization);
 
         List<NodeMetricDTO> metricDTOs = extractAndMapNodeData(cluster_utilization);
@@ -89,7 +89,7 @@ public class NodeCommandHandler {
                         NodeMetricDTO metricDTO = new NodeMetricDTO();
                         metricDTO.setNodeName(nodeName);
                         metricDTO.setClusterName(clusterName);
-                        System.out.println("------Node clusterName----"+clusterName);
+                        // System.out.println("------Node clusterName----"+clusterName);
                         metricDTO.setDate(createdTime != null ? createdTime : new Date());
                         metricDTO.setMemoryUsage(memoryUsage);
                         metricDTO.setCpuUsage(cpuUsage != null ? cpuUsage : 0.0);

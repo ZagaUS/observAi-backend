@@ -5,6 +5,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 
 import com.google.gson.Gson;
@@ -24,16 +25,11 @@ public class ClusterUtilizationConsumer {
    @Inject
    ClusterUtilizationRepo clusterUtilizationRepo;
 
+   @Inject 
+   @ConfigProperty(name = "cluster.url")
+   String destinationUrl;
   
-    //  @Incoming("cluser_utilization-audit-in")
-    //   public void consumeClusterUtilizationDetails(OtelClusterUutilization cluster_utilization) {
-    //     System.out.println("consumed cluster_utilization -----------"+cluster_utilization);      
-    //     clusterUtilizationRepo.persist(cluster_utilization);
-
-        
-    // }
-
-// @Incoming("cluser_utilization-audit-in")
+    @Incoming("cluser_utilization-audit-in")
     public void consumeClusterUtilizationDetails(OtelClusterUutilization cluster_utilization) {
         System.out.println("Consumed cluster_utilization: " + cluster_utilization);
         clusterUtilizationRepo.persist(cluster_utilization);
@@ -42,12 +38,9 @@ public class ClusterUtilizationConsumer {
 
     private void replicateData(OtelClusterUutilization data) {
       System.out.println("------*********Sending JSON data: " + data);
-        // String destinationIndiaUrl = "https://api.zagaopenshift.zagaopensource.com:6443/cluster_utilization/create_cluster_audit";
-        String destinationIndiaUrl = "http://localhost:8080/cluster_utilization/create_cluster_audit";
+        // String destinationUrl = "CLUSTER_URL/cluster_utilization/create_cluster_audit";
+        // String destinationIndiaUrl = "http://localhost:8080/cluster_utilization/create_cluster_audit";
         try {
-          // Gson gson = new Gson();
-          // JsonElement jsonElement = gson.toJsonTree(data);
-          // JsonObject jsonObject = jsonElement.getAsJsonObject();
           Gson gson = new Gson();
           JsonObject jsonObject = new JsonObject();
           jsonObject.add("resourceMetrics", gson.toJsonTree(data.getResourceMetrics()));
@@ -55,10 +48,9 @@ public class ClusterUtilizationConsumer {
           System.out.println(jsonObject);
   
           System.out.println(jsonObject);
-          // System.out.println(jsonElement);
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(destinationIndiaUrl))
+                    .uri(new URI(destinationUrl + "/cluster_utilization/create_cluster_audit"))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonObject.toString()))
                     .build();
@@ -74,7 +66,7 @@ public class ClusterUtilizationConsumer {
     }
 
 
-    // @Incoming("cluser_utilization-in")
+    @Incoming("cluser_utilization-in")
     public void consumeClusterUtilizationDTODetails(OtelClusterUutilization cluster_utilization) {
       System.out.println("consumed cluster_utilizationDTO -----------"+cluster_utilization);        
       cluster_utilizationHandler.extractAndMapClusterData(cluster_utilization);
@@ -85,20 +77,17 @@ public class ClusterUtilizationConsumer {
 
   private void replicateDTOData(OtelClusterUutilization data) {
     System.out.println("------*********Sending DTO JSON data: " + data);
-      // String destinationIndiaUrl = "https://api.zagaopenshift.zagaopensource.com:6443/cluster_utilization/create_cluster_audit";
-      String destinationIndiaUrl = "http://localhost:8080/cluster_utilization/create_clusterDTO";
+      //  String destinationUrl = "https://api.zagaopenshift.zagaopensource.com:6443/cluster_utilization/create_cluster_audit";
+      // String destinationIndiaUrl = "http://localhost:8080/cluster_utilization/create_clusterDTO";
       try {
-        // Gson gson = new Gson();
-        // JsonObject jsonObject = new JsonObject();
-        // jsonObject.add("resourceMetrics", gson.toJsonTree(data.getResourceMetrics()));
- Gson gson = new Gson();
+         Gson gson = new Gson();
           JsonElement jsonElement = gson.toJsonTree(data);
           JsonObject jsonObject = jsonElement.getAsJsonObject();
         System.out.println("--------"+jsonObject);
        System.out.println(jsonElement);
           HttpClient client = HttpClient.newHttpClient();
           HttpRequest request = HttpRequest.newBuilder()
-                  .uri(new URI(destinationIndiaUrl))
+                  .uri(new URI(destinationUrl + "/cluster_utilization/create_clusterDTO"))
                   .header("Content-Type", "application/json")
                   .POST(HttpRequest.BodyPublishers.ofString(jsonObject.toString()))
                   .build();
