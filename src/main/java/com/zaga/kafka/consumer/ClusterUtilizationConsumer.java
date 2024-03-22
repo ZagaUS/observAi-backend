@@ -26,7 +26,7 @@ public class ClusterUtilizationConsumer {
    ClusterUtilizationRepo clusterUtilizationRepo;
 
    @Inject 
-   @ConfigProperty(name = "cluster.url")
+   @ConfigProperty(name = "cluster.otel.replica.url")
    String destinationUrl;
   
     @Incoming("cluser_utilization-audit-in")
