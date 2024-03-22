@@ -1,15 +1,8 @@
 package com.zaga.controller;
 
-// import java.net.URI;
-// import java.net.http.HttpClient;
-// import java.net.http.HttpRequest;
-// import java.net.http.HttpResponse;
-
-// import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.zaga.entity.clusterutilization.OtelClusterUutilization;
 import com.zaga.handler.ClusterUtilizationHandler;
-// import com.zaga.kafka.consumer.ClusterUtilizationConsumer;
 import com.zaga.repo.ClusterUtilizationRepo;
 
 import jakarta.inject.Inject;
@@ -31,12 +24,6 @@ public class ClusterUtilizationController {
     @Inject
     ClusterUtilizationRepo cluster_utilizationRepo;
 
-    // @Inject
-    // @ConfigProperty(name = "us.cluster.url")
-    // String usClusterUrl;
-
-    //   @Inject
-    // ClusterUtilizationConsumer clusterUtilizationConsumer;
 
     @POST
     @Path("/create_clusterUtilization")
