@@ -6,6 +6,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,6 +28,10 @@ public class PodMetricsConsumerService {
     @Inject
     PodMetricDTORepo podMetricDTORepo;
 
+     @Inject 
+  @ConfigProperty(name = "cluster.otel.replica.url")
+  String destinationUrl;
+
   @Incoming("pod-audit-in")
   public void consumePodMetricDetails(OtelPodMetric podMetrics) {
     System.out.println("-------------consumed infra podmetric data----------------"+podMetrics);
@@ -37,15 +42,15 @@ public class PodMetricsConsumerService {
       System.out.println("Received null message. Check serialization/deserialization.");
     }
   }
-private final ObjectMapper objectMapper = new ObjectMapper();
+
 
 private void reallocateData(OtelPodMetric podMetrics) {
     HttpClient client = HttpClient.newHttpClient();
     try {
-        String json = objectMapper.writeValueAsString(podMetrics);
+      String json = new ObjectMapper().writeValueAsString(podMetrics);
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI("http://localhost:8081/podMetrics/create"))
+                .uri(new URI(destinationUrl+"/podMetrics/create"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
@@ -79,10 +84,10 @@ private void reallocateData(OtelPodMetric podMetrics) {
 private void relocateData(OtelPodMetric podMetrics) {
     HttpClient client = HttpClient.newHttpClient();
     try {
-        String json = objectMapper.writeValueAsString(podMetrics);
+      String json = new ObjectMapper().writeValueAsString(podMetrics);
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI("http://localhost:8081/podMetrics/createDTO"))
+                .uri(new URI(destinationUrl+"/podMetrics/create_PodDTO"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
