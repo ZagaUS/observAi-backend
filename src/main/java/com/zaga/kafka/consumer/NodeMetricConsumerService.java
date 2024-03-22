@@ -30,7 +30,7 @@ public class NodeMetricConsumerService {
     NodeDTORepo nodeDTORepo;
 
   @Inject 
-  @ConfigProperty(name = "cluster.url")
+  @ConfigProperty(name = "cluster.otel.replica.url")
   String destinationUrl;
 
   @Incoming("node-in")
