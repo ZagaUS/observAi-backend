@@ -57,6 +57,7 @@ ENV CLUSTER_UTILIZATION_TOPIC='kubelet_node_stats'
 ENV CLUSTER_UTILIZATION_OFFSET_RESET='latest'
 ENV CLUSTER_UTILIZATION_GROUP_ID='clusterUtil'
 ENV CLUSTER_UTILIZATIONDTO_GROUP_ID='clustterUtildto'
+ENV CLUSTER_URL='https://api.zagaopenshift.zagaopensource.com:6443'
 
 # We make four distinct layers so if there are application changes the library layers can be re-used
 COPY --chown=185 target/quarkus-app/lib/ /deployments/lib/
