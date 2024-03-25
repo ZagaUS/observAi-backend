@@ -1,5 +1,6 @@
 package com.zaga.kafka.consumer;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -7,13 +8,16 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.jboss.logging.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +31,11 @@ import com.zaga.repo.PodMetricDTORepo;
 import jakarta.inject.Inject;
 
 public class PodMetricsConsumerService {
+
+  private static final Logger LOG = Logger.getLogger(PodMetricsConsumerService.class);
+
+  @Inject
+  Logger log;
 
   @Inject
   PodCommandHandler podCommandHandler;
@@ -50,32 +59,20 @@ public class PodMetricsConsumerService {
   }
 
   private void reallocateData(OtelPodMetric podMetrics) {
-    // HttpClient client = HttpClient.newHttpClient();
-    // try {
-    // String json = new ObjectMapper().writeValueAsString(podMetrics);
-
-    // HttpRequest request = HttpRequest.newBuilder()
-    // .uri(new URI(destinationUrl+"/podMetrics/create"))
-    // .header("Content-Type", "application/json")
-    // .POST(HttpRequest.BodyPublishers.ofString(json))
-    // .build();
-
-    // client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-    // .thenAccept(response -> System.out.println("response code: " +
-    // response.statusCode()))
-    // .exceptionally(e -> {
-    // e.printStackTrace();
-    // return null;
-    // });
-    // } catch (JsonProcessingException | URISyntaxException e) {
-    // e.printStackTrace();
-    // }
+    CloseableHttpClient httpClient = null;
     try {
       // CHANGES BY SURENDAR
       Gson gson = new Gson();
       JsonElement jsonElement = gson.toJsonTree(podMetrics);
-      StringEntity entity = new StringEntity(jsonElement.toString());
-      CloseableHttpClient httpClient = HttpClientBuilder.create()
+      String jsonBody = new ObjectMapper().writeValueAsString(podMetrics);
+      StringEntity entity = new StringEntity(jsonBody.toString());
+      RequestConfig requestConfig = RequestConfig.custom()
+          // Set connection timeout to 5 seconds
+          .setConnectTimeout(5000)
+          .build();
+
+      httpClient = HttpClients.custom()
+          .setDefaultRequestConfig(requestConfig)
           .build();
       String postUrl = destinationUrl + "/podMetrics/create";
       HttpPost postRequest = new HttpPost(postUrl);
@@ -85,11 +82,26 @@ public class PodMetricsConsumerService {
       CloseableHttpResponse response = httpClient.execute(postRequest);
 
       HttpEntity responseEntity = response.getEntity();
-      if (responseEntity != null) {
-        System.out.println("=======[RESPONSE ENTITY]======= " + responseEntity);
+      int statusCode = response.getStatusLine().getStatusCode();
+      if (statusCode == 200) {
+        log.debug("from replicateDTOData method - Request successful. Status code: " + statusCode);
+        if (responseEntity != null) {
+
+          log.debug("from replicateDTOData method - Http response from replicateData method" + responseEntity);
+        }
+      } else {
+        log.debug("from replicateDTOData method - Request failed. Status code: " + statusCode);
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("An error occurred  while executing replicateDTOData", e);
+    } finally {
+      if (httpClient != null) {
+        try {
+          httpClient.close();
+        } catch (IOException e) {
+          log.error("An error occurred  while executing replicateDTOData", e);
+        }
+      }
     }
   }
 
@@ -106,33 +118,20 @@ public class PodMetricsConsumerService {
   }
 
   private void relocateData(OtelPodMetric podMetrics) {
-    // HttpClient client = HttpClient.newHttpClient();
-    // try {
-    // String json = new ObjectMapper().writeValueAsString(podMetrics);
-
-    // HttpRequest request = HttpRequest.newBuilder()
-    // .uri(new URI(destinationUrl+"/podMetrics/create_PodDTO"))
-    // .header("Content-Type", "application/json")
-    // .POST(HttpRequest.BodyPublishers.ofString(json))
-    // .build();
-
-    // client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-    // .thenAccept(response -> System.out.println(" response code: " +
-    // response.statusCode()))
-    // .exceptionally(e -> {
-    // e.printStackTrace();
-    // return null;
-    // });
-    // } catch (JsonProcessingException | URISyntaxException e) {
-    // e.printStackTrace();
-    // }
-
+    CloseableHttpClient httpClient = null;
     try {
       // CHANGES BY SURENDAR
       Gson gson = new Gson();
       JsonElement jsonElement = gson.toJsonTree(podMetrics);
-      StringEntity entity = new StringEntity(jsonElement.toString());
-      CloseableHttpClient httpClient = HttpClientBuilder.create()
+      String jsonBody = new ObjectMapper().writeValueAsString(podMetrics);
+      StringEntity entity = new StringEntity(jsonBody.toString());
+      RequestConfig requestConfig = RequestConfig.custom()
+          // Set connection timeout to 5 seconds
+          .setConnectTimeout(5000)
+          .build();
+
+      httpClient = HttpClients.custom()
+          .setDefaultRequestConfig(requestConfig)
           .build();
       String postUrl = destinationUrl + "/podMetrics/create_PodDTO";
       HttpPost postRequest = new HttpPost(postUrl);
@@ -142,47 +141,27 @@ public class PodMetricsConsumerService {
       CloseableHttpResponse response = httpClient.execute(postRequest);
 
       HttpEntity responseEntity = response.getEntity();
-      if (responseEntity != null) {
-        System.out.println("=======[RESPONSE ENTITY]======= " + responseEntity);
+      int statusCode = response.getStatusLine().getStatusCode();
+      if (statusCode == 200) {
+        log.debug("from replicateDTOData method - Request successful. Status code: " + statusCode);
+        if (responseEntity != null) {
+
+          log.debug("from replicateDTOData method - Http response from replicateData method" + responseEntity);
+        }
+      } else {
+        log.debug("from replicateDTOData method - Request failed. Status code: " + statusCode);
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("An error occurred  while executing replicateDTOData", e);
+    } finally {
+      if (httpClient != null) {
+        try {
+          httpClient.close();
+        } catch (IOException e) {
+          log.error("An error occurred  while executing replicateDTOData", e);
+        }
+      }
     }
 
   }
-
-  // private void reallocateData(OtelPodMetric podMetrics){
-
-  // HttpClient client = HttpClient.newHttpClient();
-  // try{
-  // HttpRequest request = HttpRequest.newBuilder()
-  // .uri(new URI("http://localhost:8081/podMetrics/create"))
-  // .header("Content-Type", "application/json")
-  // .POST(HttpRequest.BodyPublishers.ofString(podMetrics.toString()))
-  // .build();
-  // client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-  // .thenAccept(response -> System.out.println("Replication response code: " +
-  // response.statusCode()))
-  // .exceptionally(e -> {
-  // e.printStackTrace();
-  // return null;
-  // });
-  // } catch (Exception e) {
-  // e.printStackTrace();
-  // }
 }
-
-// Client client = ClientBuilder.newClient();
-// Response response = client.
-// target("http://localhost:8081/podMetrics/create")
-// //
-// target("http://api.zagaopenshift.zagaopensource.com:6443/podMetrics/create-audit")
-// // .request(MediaType.APPLICATION_JSON)
-// .request()
-// .post(Entity.entity(podMetrics, MediaType.APPLICATION_JSON));
-
-// System.out.println("Response status: " + response.getStatus());
-// String responseBody = response.readEntity(String.class);
-// System.out.println("Response entity: " + responseBody);
-
-// response.close();

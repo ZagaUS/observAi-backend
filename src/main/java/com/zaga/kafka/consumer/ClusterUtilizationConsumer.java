@@ -65,8 +65,7 @@ public class ClusterUtilizationConsumer {
       JsonObject jsonObject = new JsonObject();
       jsonObject.add("resourceMetrics", gson.toJsonTree(data.getResourceMetrics()));
 
-      JsonElement jsonElement = gson.toJsonTree(data);
-      StringEntity entity = new StringEntity(jsonElement.toString());
+      StringEntity entity = new StringEntity(jsonObject.toString());
 
       RequestConfig requestConfig = RequestConfig.custom()
           // Set connection timeout to 5 seconds
@@ -113,7 +112,7 @@ public class ClusterUtilizationConsumer {
     }
   }
 
-  @Incoming("cluser_utilization-in")
+  @Incoming("cluser_utilization-in") 
   public void consumeClusterUtilizationDTODetails(OtelClusterUutilization cluster_utilization) {
     cluster_utilizationHandler.extractAndMapClusterData(cluster_utilization);
     replicateDTOData(cluster_utilization);
@@ -126,7 +125,10 @@ public class ClusterUtilizationConsumer {
     try {
       Gson gson = new Gson();
       JsonElement jsonElement = gson.toJsonTree(data);
-      StringEntity entity = new StringEntity(jsonElement.toString());
+
+      JsonObject jsonObject = new JsonObject();
+      jsonObject.add("resourceMetrics", gson.toJsonTree(data.getResourceMetrics()));
+      StringEntity entity = new StringEntity(jsonObject.toString());
 
       RequestConfig requestConfig = RequestConfig.custom()
           // Set connection timeout to 5 seconds
