@@ -132,7 +132,7 @@ public class ClusterUtilizationConsumer {
 
       RequestConfig requestConfig = RequestConfig.custom()
           // Set connection timeout to 5 seconds
-          .setConnectTimeout(50000)
+          .setConnectTimeout(5000)
           .build();
 
       httpClient = HttpClients.custom()
