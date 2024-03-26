@@ -42,7 +42,7 @@ public class MetricConsumerService {
 
      private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-//   @Incoming("metric-audit-in")
+  @Incoming("metric-audit-in")
   public void consumeMetricDetails(OtelMetric metrics) {
     System.out.println("consumed metric data----------------");
     if (metrics != null) {
@@ -53,7 +53,7 @@ public class MetricConsumerService {
 
   }
 
-    // @Incoming("metric-in")
+    @Incoming("metric-in")
     public void consumeMetricDTODetails(OtelMetric metrics) {
       System.out.println("consumed metricDTO data----------------");
       if (metrics != null) {

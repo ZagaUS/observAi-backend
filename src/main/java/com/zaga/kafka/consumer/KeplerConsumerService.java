@@ -44,7 +44,7 @@ public class KeplerConsumerService {
     public void consumeKeplerDTODetails(KeplerMetric keplerMetric) { 
         if (keplerMetric != null) {
             System.out.println("consumed KeplerDTO data ------------------");
-            keplerMetricCommandHandler.extractAndMapData(keplerMetric);
+            keplerMetricCommandHandler.createKeplerMetric(keplerMetric);
         } else {
             System.out.println("Received null message. Check serialization/deserialization.");
         }

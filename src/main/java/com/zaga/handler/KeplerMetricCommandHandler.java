@@ -105,8 +105,7 @@ public class KeplerMetricCommandHandler {
 
 
 public void createKeplerMetric(KeplerMetric metric) {
-  keplerMetricRepo.persist(metric);
-  System.out.println("Entered=----------------------------------");
+  System.out.println("==========[KEPLER METRIC DTO MAPPING]==========");
   List<KeplerMetricDTO> metricDTOs = extractAndMapData(metric);
 
   if (!metricDTOs.isEmpty()) {
